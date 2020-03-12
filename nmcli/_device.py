@@ -21,6 +21,12 @@ class DeviceControlInterface:
     def wifi_radio_enable(self) -> None:
         raise NotImplementedError
 
+    def disconnect(self, device_name) -> bool:
+        raise NotImplementedError
+
+    def connect(self, device_name) -> bool:
+        raise NotImplementedError
+
 
 class DeviceControl(DeviceControlInterface):
 
@@ -60,8 +66,21 @@ class DeviceControl(DeviceControlInterface):
     def wifi_radio_enable(self) -> None:
         self._syscmd.nmcli(['radio', 'wifi', 'on'])
 
-    def device_status(self,  device_name: str) -> None:
-        r = self._syscmd.nmcli(['device', 'status', device_name])
-        print(r)
+    def disconnect(self, device_name) -> bool:
+        r = self._syscmd.nmcli(['dev', 'disconnect', device_name])
+        if r == '':
+            return False
+        elif 'successfully disconnected' in r:
+            return True
+        else:
+            return False
+
+    def connect(self, device_name) -> bool:
+        r = self._syscmd.nmcli(['dev', 'connect', device_name])
+        if 'successfully activated' in r:
+            return True
+        else:
+            return False
+
 
 

@@ -18,6 +18,6 @@ try:
 
     # nmcli.device.wifi_radio_disable()
     # nmcli.device.wifi_radio_enable()
-      nmcli.device.device_status('enp0s25')
+      print(nmcli.device.connect('wlp3s0'))
 except Exception as e:
     print(e)
