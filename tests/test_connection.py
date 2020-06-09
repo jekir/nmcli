@@ -10,13 +10,15 @@ def test_connection():
     s = DummySystemCommand('''NAME            UUID                                  TYPE      DEVICE
 AP1  3eac760c-de77-4823-9ab8-773c276daca3  wifi      wlan0
 Home            700f5b18-cbb3-4d38-9c61-e3bc3a3852b9  ethernet  eth0
+Wired connection 1  700f5b18-cbb3-4d38-9c61-999999999999  ethernet  eth1
 ''')
     connection = ConnectionControl(s)
     r = connection()
 
     assert r == [
         Connection('AP1', '3eac760c-de77-4823-9ab8-773c276daca3', 'wifi', 'wlan0'),
-        Connection('Home', '700f5b18-cbb3-4d38-9c61-e3bc3a3852b9', 'ethernet', 'eth0')
+        Connection('Home', '700f5b18-cbb3-4d38-9c61-e3bc3a3852b9', 'ethernet', 'eth0'),
+        Connection('Wired connection 1', '700f5b18-cbb3-4d38-9c61-999999999999', 'ethernet', 'eth1')
     ]
     assert s.passed_parameters == 'connection'
 
@@ -81,8 +83,10 @@ def test_show():
         buf = f.read()
     s = DummySystemCommand(buf)
     connection = ConnectionControl(s)
-    r = connection.show('Con1')
-    assert len(r.keys()) == 81
-    assert r['connection.id'] == 'Home'
+    r = connection.show('Wired connection 1')
+    assert len(r.keys()) == 114
+    assert r['connection.id'] == 'Wired connection 1'
     assert r['connection.stable-id'] is None
     assert r['ipv4.dns-options'] is None
+    assert r['IP4.ADDRESS[1]'] == '192.168.1.10/24'
+    assert r['DHCP6.OPTION[8]'] == 'requested_dhcp6_name_servers = 1'
